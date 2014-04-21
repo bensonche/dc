@@ -42,7 +42,7 @@ double readGrade (ifstream &fgrade, double score) //ok
     return 99.0;
 }
 
-void readCourse (ifstream &fcourse, ifstream &fgrade, Student a, int CWp, int EXp, int num)
+double readCourse (ifstream &fcourse, ifstream &fgrade, Student a, int CWp, int EXp, int num)
 //(course, grading, student, course the student taking)
 {
     int call=1;
@@ -78,7 +78,7 @@ void readCourse (ifstream &fcourse, ifstream &fgrade, Student a, int CWp, int EX
     }
     cout << a.name << " [" << a.uid << "]" << endl;
     score = (a.CW[num]/100.0*CWp)+(a.EX[num]/100.0*EXp);
-    a.gpa[num]=readGrade(fgrade, score);
+    return readGrade(fgrade, score);
 }
 
 bool findStudent (ifstream &fcourse, Student a)
@@ -101,7 +101,7 @@ void displayOne (ifstream &fcourse, ifstream &fgrade, string Cname, Student a, i
 //(course[i], grade, student a, the class index the student is taking.
 {
     string text;
-    readCourse(fcourse, fgrade, a, CWp, EXp, i);
+    a.gpa[i] = readCourse(fcourse, fgrade, a, CWp, EXp, i);
     if (findStudent(fcourse, a)==true)
         cout << Cname << ": " << a.gpa[i] << endl << endl;
 }
