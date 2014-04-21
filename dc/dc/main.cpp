@@ -6,6 +6,8 @@
 
 using namespace std;
 
+const string GRADE_FILE = "grade.txt";
+
 struct Student
 {
     string name, uid, course[6];
@@ -23,26 +25,33 @@ void error (ifstream &fin)
     }
 }
 
-double readGrade (ifstream &fgrade, double score) //ok
+double readGrade (double score) //ok
 //determine the gpa of student in that course.
 {
-    int LS[7], HS[7], i=0;
-    double grade[7];
+	ifstream fgrade;
+
+    fgrade.open (GRADE_FILE);
+
+    int LS, HS, i=0;
+    double grade;
     char dummy;
     fgrade.clear();
     fgrade.seekg(0, ios::beg);
     while (fgrade.good())
     {
-        fgrade >> LS[i] >> dummy >> HS[i] >> dummy >> grade[i];
-        if (score>LS[i] && score<HS[i])
-            return grade[i];
-        else
-            i++;
+        fgrade >> LS >> dummy >> HS >> dummy >> grade;
+        if (score>LS && score<HS)
+        {
+			fgrade.close();
+            return grade;
+        }
     }
+
+	fgrade.close();
     return 99.0;
 }
 
-double readCourse (ifstream &fcourse, ifstream &fgrade, Student a, int CWp, int EXp, int num)
+double readCourse (ifstream &fcourse, Student a, int CWp, int EXp, int num)
 //(course, grading, student, course the student taking)
 {
     int call=1;
@@ -78,7 +87,7 @@ double readCourse (ifstream &fcourse, ifstream &fgrade, Student a, int CWp, int 
     }
     cout << a.name << " [" << a.uid << "]" << endl;
     score = (a.CW[num]/100.0*CWp)+(a.EX[num]/100.0*EXp);
-    return readGrade(fgrade, score);
+    return readGrade(score);
 }
 
 bool findStudent (ifstream &fcourse, Student a)
@@ -97,16 +106,16 @@ bool findStudent (ifstream &fcourse, Student a)
     return false;
 }
 
-void displayOne (ifstream &fcourse, ifstream &fgrade, string Cname, Student a, int CWp, int EXp, int i)
+void displayOne (ifstream &fcourse, string Cname, Student a, int CWp, int EXp, int i)
 //(course[i], grade, student a, the class index the student is taking.
 {
     string text;
-    a.gpa[i] = readCourse(fcourse, fgrade, a, CWp, EXp, i);
+    a.gpa[i] = readCourse(fcourse, a, CWp, EXp, i);
     if (findStudent(fcourse, a)==true)
         cout << Cname << ": " << a.gpa[i] << endl << endl;
 }
 
-void displayAll (ifstream &fcourse, ifstream &fgrade)  //(fdata, f);
+void displayAll (ifstream &fcourse)  //(fdata, f);
 //open the course file-> get the info of students-> read score-> obtain gpa
 //->display name, uid, course, gpa
 {
@@ -164,7 +173,7 @@ int main()
     {
         if (command == "all")
         {
-            displayOne(fCourse[0], fgrade, cCode[0], s[0], CWp[0], EXp[0], 0);
+            displayOne(fCourse[0], cCode[0], s[0], CWp[0], EXp[0], 0);
             //for (int i=0; i<(index--); i++)
                 //for (int j=0; j<300; j++)
                     //displayOne(fCourse[i], fgrade, s[0], a);
@@ -182,8 +191,8 @@ int main()
         cout << endl << "all | search | top | <uid> | end" << endl;
         getline(cin, command);
     }
-    for (int i=0; i<(index--); i++)
-        fCourse[i].close();
+	while(index > 0)
+        fCourse[index--].close();
     fdata.close();
     fgrade.close ();
     return 0;
