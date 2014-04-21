@@ -31,6 +31,7 @@ double readGrade (double score) //ok
 	ifstream fgrade;
 
     fgrade.open (GRADE_FILE);
+	error(fgrade);
 
     int LS, HS, i=0;
     double grade;
@@ -144,17 +145,14 @@ void Top (ifstream &fin, int top)
 int main()
 {
     Student s[300];
-    ifstream fdata, fgrade, fCourse[12];
+    ifstream fdata, fCourse[12];
     string command, course[12], cCode[12];;
     char dummy, Cname[14];
     int index=0, CWp[12], EXp[12], a=-1;
     //int t;
 
     fdata.open ("data.txt");
-    fgrade.open ("grade.txt");
-
     error (fdata);
-    error (fgrade);
 
     while (fdata.good()) //ok
     {
@@ -194,6 +192,5 @@ int main()
 	while(index > 0)
         fCourse[index--].close();
     fdata.close();
-    fgrade.close ();
     return 0;
 }
