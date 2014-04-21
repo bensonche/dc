@@ -1,0 +1,82 @@
+chan da man [2012312388]
+ENGG1111: 4.3
+MATH1851: 3.3
+
+chan siu man [2013034899]
+MATH1851: 3.3
+
+cheung dat hang [2013294272]
+ENGG1111: 3.3
+
+cheung wing yan [3035027626]
+ENGG1111: 3.3
+
+fung wai [3035034693]
+MATH1851: 1
+
+kwan lun wai [3035007755]
+ENGG1111: 3.3
+MATH1851: 4.3
+
+lai po wing [2013669348]
+ENGG1111: 1
+MATH1851: 4
+
+lam chi ho [2013110610]
+ENGG1111: 2.7
+
+lee chi ho [3035031524]
+ENGG1111: 2.2
+
+li kin lung [2013103590]
+ENGG1111: 3.3
+
+li wai shing [2013012011]
+ENGG1111: 3.3
+MATH1851: 3.3
+
+man guo yin [3035033962]
+MATH1851: 2.7
+
+mok kam cheng [2013237468]
+ENGG1111: 3.3
+
+tam ka yan [2013669752]
+ENGG1111: 3.3
+MATH1851: 2.2
+
+tang angel [2013017035]
+ENGG1111: 3.3
+MATH1851: 1
+
+to king Hong [3035007406]
+ENGG1111: 3.3
+MATH1851: 4
+
+wong hei [3035006220]
+MATH1851: 2.2
+
+wong leonard che yue [3035031720]
+ENGG1111: 3.3
+
+wong shuk kwan [3035670871]
+ENGG1111: 1
+
+yeung mun tin [2013037990]
+ENGG1111: 3.3
+MATH1851: 4
+
+yip chi wan richard [3035005252]
+MATH1851: 1
+
+yu wai yip [3035007717]
+ENGG1111: 3.3
+MATH1851: 3.3
+
+zhan ti [2013832000]
+ENGG1111: 2.7
+MATH1851: 3.3
+
+zhou ling jun [3035000496]
+MATH1851: 3.3
+

@@ -18,6 +18,7 @@ void error (ifstream &fin)
     if (fin.fail())
     {
         cout << "Error opening file" << endl;
+
         exit (1);
     }
 }
