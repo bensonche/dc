@@ -333,76 +333,7 @@ double getGpa (int courseCW, int courseEX, int CW, int EX)
     return readGrade(score);
 }
 
-/*bool findStudent (ifstream &fcourse, Student a)
-//to see if the student attends the course.
-{
-    string text;
-    fcourse.clear();
-    fcourse.seekg(0,ios::beg);
-    while (fcourse.good())
-    {
-        getline (fcourse, text);
-        int pos = text.find (a.uid);
-        if (pos!=-1)        //if found name of student in the file, num++
-            return true;
-    }
-    return false;
-}
-
-void displayOne (ifstream &fcourse, string Cname, Student a, int CWp, int EXp, int cNum)
-//(course[i], grade, student a, the class index the student is taking.
-{
-    string text;
-    a.gpa[cNum] = readCourse(fcourse, a, CWp, EXp, cNum);
-    if (findStudent(fcourse, a)==true)
-        cout << Cname << ": " << a.gpa[cNum] << endl << endl;
-}
-
-void sorting (StudentList s)
-//to rearrange the display orders with ascending alphabets of student's name.
-{
-    Student temp;
-    for (int i=0; i<s.Count; i++)
-        for (int j=(i+1); j<s.Count; j++)
-        {
-            if (s.List[j].name<s.List[i].name)
-            {
-                temp=s.List[j];
-                s.List[j]=s.List[i];
-                s.List[i]=temp;
-            }
-        }
-}
-
-void displayAll (ifstream &fcourse)  //(fdata, f);
-//open the course file-> get the info of students-> read score-> obtain gpa
-//->display name, uid, course, gpa
-{
-    Student a[300];
-
-    while (fcourse.good())
-    {
-        //for (int i=0; i<300; i++)
-            //for (int j=0; j<6; j++)
-                //displayOne (fcourse, fgrade, a[i], j);
-    }
-}
-
-void searchKey (StudentList s, string key)
-//search the name/uid of student in the StudentList that that contains the string key.
-{
-
-
-}
-
-void Top (StudentList s, int top)
-//display student that has the highest average gpa.
-//'top' is the number of top students the user want to show.
-{
-
-}
-*/
-void prompt()
+void prompt(StudentList *students)
 {
 	string command, uid;
 
@@ -413,6 +344,7 @@ void prompt()
     {
         if (command == "all")
         {
+			printStudentList(students);
             //for (int i=0; i<(index--); i++)
 
                     //displayOne(fCourse[i], fgrade, s[0], a);
@@ -446,83 +378,7 @@ int main()
     StudentList *students = new StudentList;
     CourseList *list = readData(students);
 
-	printStudentList(students);
+	prompt(students);
 
-	prompt();
-    /*
-    Student a; //spStudent;
-    StudentList s;
-    ifstream fdata, fCourse[12];
-    string command, course[12], cCode[12];//, key;
-    //stringstream UIDstream;
-    char dummy, Cname[14];
-    int index=0, CWp[12], EXp[12], num=0; //, uid, topNum;
-
-    fdata.open ("data.txt");
-
-    error (fdata);
-
-    while (fdata.good()) //ok
-    {
-        fdata>>Cname>>dummy>>dummy>>CWp[index]>>dummy>>dummy>>EXp[index];
-        course[index]=Cname;
-        cCode[index]=course[index].substr(0, 8);
-        fCourse[index].open (course[index].c_str());
-        error (fCourse[index]);
-        index++;
-    }
-
-    for (int j=0; j<=s.Count; j++)      //problem here lol, can't run program
-    {
-        for (int i=0; i<index; i++)         //read all the data from all the course files.
-        {
-            if (findStudent(fCourse[index], s.List[j])==true)
-            {
-                s.List[j].course[num]=cCode[i];
-                s.List[j].gpa[num]=readCourse (fCourse[i], s.List[j], CWp[i], EXp[i], i);
-                num++;
-            }
-        }
-        s.Count++;
-    }
-
-
-    cout << "all | search | top | <uid> | end" << endl;
-    getline(cin, command);
-
-    while (command != "end")
-    {
-        if (command == "all")
-        {
-            for (int j=0; j<300; j++)
-                for (int i=0; i<(index--); i++)
-                    displayOne(fCourse[i], cCode[i], s.List[j], CWp[i], EXp[i], i);
-            //for (int i=0; i<(index--); i++)
-
-                    //displayOne(fCourse[i], fgrade, s[0], a);
-        }
-
-        //if (command == "search")
-        {
-            //getline (cin, key);
-            //searchKey (s, key);
-
-        }
-
-        //if (command == "top")
-            //Top (s, topNum);
-
-        //if (command >> uid)
-        {
-            //UIDstream << uid << endl;
-            //spStudent.uid=UIDstream.str();
-        }
-        cout << endl << "all | search | top | <uid> | end" << endl;
-        getline(cin, command);
-    }
-    while (index>0)
-        fCourse[index--].close();
-    fdata.close();
-    */
     return 0;
 }
