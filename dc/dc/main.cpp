@@ -34,7 +34,7 @@ struct Student
 {
     string name, uid;
     GradeList *gradeList;
-    double maxGpa;
+    double avgGpa;
 
     Student()
     {
@@ -114,6 +114,17 @@ int compareStudents(Student *a, Student *b)
     return result;
 }
 
+// Compare by gpa, then name, then uid
+int compareStudentsGpa(Student *a, Student *b)
+{
+    if(a->avgGpa < b->avgGpa)
+		return 1;
+	if(a->avgGpa > b->avgGpa)
+		return -1;
+
+    return compareStudents(a, b);
+}
+
 // Returns index of student. Otherwise return -1 if not found
 int findStudent(StudentList *list, Student *s, int min, int max)
 {
@@ -147,15 +158,16 @@ int findStudent(StudentList *list, Student *s, int min, int max)
     return findStudent(list, s, mid, max);
 }
 
-void updateMaxGpa(Student *s)
+void updateAvgGpa(Student *s)
 {
-    s->maxGpa = s->gradeList->list[0]->gpa;
+    s->avgGpa = s->gradeList->list[0]->gpa;
 
-    for(int i=0; i<s->gradeList->count; i++ )
+    for(int i=1; i<s->gradeList->count; i++ )
     {
-        if(s->gradeList->list[i]->gpa > s->maxGpa)
-            s->maxGpa = s->gradeList->list[0]->gpa;
+        s->avgGpa += s->gradeList->list[i]->gpa;
     }
+
+	s->avgGpa /= s->gradeList->count;
 }
 
 void addStudent(StudentList *list, Student *s)
@@ -163,24 +175,32 @@ void addStudent(StudentList *list, Student *s)
     if(list->count == 0)
     {
         list->list[list->count++] = s;
-        updateMaxGpa(s);
+        updateAvgGpa(s);
     }
     else
     {
         int index = findStudent(list, s, 0, list->count - 1);
         if(index == -1) // Insert into the list
         {
-            for(int i = list->count; i > 0; i--)
+            for(int i = list->count; i >= 0; i--)
             {
+				if(i == 0)
+                {
+					list->list[0] = s;
+					list->count++;
+					updateAvgGpa(s);
+					return;
+                }
                 if(compareStudents(list->list[i-1], s) > 0)
                 {
                     list->list[i] = list->list[i-1];
                 }
+                
                 else
                 {
                     list->list[i] = s;
                     list->count++;
-                    updateMaxGpa(s);
+                    updateAvgGpa(s);
                     return;
                 }
             }
@@ -193,12 +213,40 @@ void addStudent(StudentList *list, Student *s)
 
             addGrade(list->list[index]->gradeList, g);
 
-            updateMaxGpa(list->list[index]);
+            updateAvgGpa(list->list[index]);
 
             delete s->gradeList->list[0];
             delete [] s->gradeList->list;
             delete s->gradeList;
             delete s;
+        }
+    }
+}
+
+void addStudentGpaSorted(StudentList *list, Student *s)
+{
+    if(list->count == 0)
+        list->list[list->count++] = s;
+    else
+    {
+        for(int i = list->count; i >= 0; i--)
+        {
+			if(i == 0)
+            {
+				list->list[0] = s;
+				list->count++;
+				return;
+            }
+            if(compareStudentsGpa(list->list[i-1], s) > 0)
+            {
+                list->list[i] = list->list[i-1];
+            }
+            else
+            {
+                list->list[i] = s;
+                list->count++;
+                return;
+            }
         }
     }
 }
@@ -396,11 +444,40 @@ void findStudentName(StudentList *students, string name, bool matchStart)
         cout << "no record" << endl << endl;
 }
 
+void printTop(StudentList *list, int n = -1)
+{
+	bool top = n == -1;
+	double avgGpa = list->list[0]->avgGpa;
+	for(int i=0; i<list->count; i++)
+    {
+		Student *s = list->list[i];
+		if(top)
+        {
+            if(avgGpa != s->avgGpa)
+                return;
+
+			printStudent(s);
+        }
+        else
+        {
+            if(n-- <= 0)
+                return;
+            printStudent(s);
+        }
+    }
+}
+
 void prompt(StudentList *students)
 {
     string command, uid;
+	StudentList *gpaList = new StudentList;
+	for(int i=0; i<students->count; i++)
+    {
+		addStudentGpaSorted(gpaList, students->list[i]);
+    }
 
     cout << "all | search | top | <uid> | end" << endl;
+
     getline(cin, command);
 
     while (command != "end")
@@ -421,13 +498,34 @@ void prompt(StudentList *students)
                 findStudentName(students, word, false);
 
         }
-        else if (command == "top")
-        {
-            ;
-        }
         else
         {
-            findUID(students, command);
+            stringstream ss;
+
+            ss << command;
+            string tok;
+
+            if(getline(ss, tok, ' '))
+            {
+                if(tok != "top")
+                {
+                    findUID(students, command);
+                }
+                else
+                {
+                    if(!getline(ss, tok, ' '))
+                        printTop(gpaList);
+                    else
+                    {
+						int n;
+						ss.clear();
+						ss << tok;
+						ss >> n;
+
+						printTop(gpaList, n);
+                    }
+                }
+            }
         }
         cout << endl << "all | search | top | <uid> | end" << endl;
         getline(cin, command);
