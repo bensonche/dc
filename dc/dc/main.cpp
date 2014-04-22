@@ -9,6 +9,8 @@
 
 using namespace std;
 
+double getGpa (int courseCW, int courseEX, int CW, int EX);
+double readGrade (double score);
 
 struct Grade
 {
@@ -23,6 +25,7 @@ struct GradeList
     
     GradeList()
     {
+		list = new Grade*[6];
         count = 0;
     }
 };
@@ -30,7 +33,12 @@ struct GradeList
 struct Student
 {
     string name, uid;
-    GradeList g;
+    GradeList *gradeList;
+
+	Student()
+    {
+		gradeList = new GradeList;
+    }
 };
 
 struct StudentList
@@ -85,11 +93,6 @@ struct CourseList
     }
 };
 
-void addStudent(StudentList *list, Student *s)
-{
-    list->list[list->count++] = s;
-}
-
 void addGrade(GradeList *list, Grade *g)
 {
     list->list[list->count++] = g;
@@ -100,19 +103,107 @@ void addCourse(CourseList *list, Course *c)
     list->list[list->count++] = c;
 }
 
+// Compare by name first, then uid
+int compareStudents(Student *a, Student *b)
+{
+    int result = strcmp(a->name.c_str(), b->name.c_str());
+    if(result == 0)
+        return strcmp(a->uid.c_str(), b->uid.c_str());
+        
+    return result;
+}
+
+// Returns index of student. Otherwise return -1 if not found
+int findStudent(StudentList *list, Student *s, int min, int max)
+{
+    if (min > max || list->count == 0)
+        return -1;
+    if(min == max)
+    {
+        if(compareStudents(list->list[min], s) == 0)
+			return min;
+        else
+			return -1;
+    }
+	if(min + 1 == max)
+    {
+		if(compareStudents(list->list[min], s) == 0)
+			return min;
+		if(compareStudents(list->list[max], s) == 0)
+			return max;
+		return -1;
+    }
+    
+    int mid = (max + min) / 2.0;
+
+    int result = compareStudents(list->list[mid], s);
+    if(result == 0)
+    {
+        return mid;
+    }
+    if(result > 0)
+        return findStudent(list, s, min, mid);
+    return findStudent(list, s, mid, max);
+}
+
+void addStudent(StudentList *list, Student *s)
+{
+    if(list->count == 0)
+        list->list[list->count++] = s;
+    else
+    {
+        int index = findStudent(list, s, 0, list->count - 1);
+        if(index == -1) // Insert into the list
+        {
+            for(int i = list->count; i > 0; i--)
+            {
+                if(compareStudents(list->list[i-1], s) > 0)
+                {
+                    list->list[i] = list->list[i-1];
+                }
+                else
+                {
+                    list->list[i] = s;
+                    list->count++;
+                    return;
+                }
+            }
+        }
+        else // Update existing student
+        {
+            Grade *g = new Grade;
+            g->course = s->gradeList->list[0]->course;
+			g->gpa = s->gradeList->list[0]->gpa;
+
+			addGrade(list->list[index]->gradeList, g);
+
+			delete s->gradeList->list[0];
+			delete [] s->gradeList->list;
+			delete s->gradeList;
+			delete s;
+        }
+    }
+}
+
 void addCourseData(CourseDataList *list, CourseData *c)
 {
     list->list[list->count++] = c;
 }
 
-void printCourseDataList(CourseDataList *list)
+void printStudentList(StudentList *list)
 {
     for(int i = 0; i < list->count; i++)
     {
-        cout << list->list[i]->uid << endl;
-        cout << list->list[i]->cw << endl;
-        cout << list->list[i]->ex << endl;
-        cout << list->list[i]->name << endl;
+        Student *s = list->list[i];
+		cout << s->name << " [" << s->uid << "]" << endl;
+
+		GradeList *grades = s->gradeList;
+		for(int j=0; j<grades->count; j++)
+        {
+			Grade *grade = grades->list[j];
+			cout << grade->course << ": " << grade->gpa << endl;
+        }
+		
 		cout << endl;
     }
 }
@@ -127,20 +218,21 @@ void error (ifstream &fin)
 }
 
 // Read files
-CourseDataList* readSpecificCourse(string name)
+CourseDataList* readSpecificCourse(Course *course, StudentList *students)
 {
     ifstream f;
-    f.open(name + ".txt");
+    f.open((course->name + ".txt").c_str());
     error(f);
     
     stringstream linestream, iss;
     string temp, line, tok;
     
     CourseDataList *list = new CourseDataList;
-    CourseData *c = new CourseData;
+    CourseData *c;
     
     while(getline(f, line))
     {
+        c = new CourseData;
         linestream.clear();
         linestream << line;
         
@@ -165,14 +257,23 @@ CourseDataList* readSpecificCourse(string name)
         }
         
         addCourseData(list, c);
-        c = new CourseData;
+
+		Student *s = new Student;
+		s->name = c->name;
+		s->uid = c->uid;
+		Grade *g = new Grade;
+		g->course = course->name;
+        g->gpa = getGpa(course->cw, course->ex, c->cw, c->ex);
+		addGrade(s->gradeList, g);
+
+		addStudent(students, s);
     }
     
     f.close();
     return list;
 }
 
-CourseList* readData()
+CourseList* readData(StudentList *students)
 {
     ifstream fdata;
     fdata.open(DATA_FILE);
@@ -190,10 +291,8 @@ CourseList* readData()
         fdata >> filename >> dummy >> dummy >> c->cw >> dummy >> dummy >> c->ex;
         c->name = filename.substr(0, filename.length() - 4);
         
-        c->data = readSpecificCourse(c->name);
-        
-        printCourseDataList(c->data);
-        
+        c->data = readSpecificCourse(c, students);
+
         addCourse(list, c);
     }
     
@@ -227,48 +326,14 @@ double readGrade (double score) //ok
     return 99.0;
 }
 
-/*
-
-double readCourse (ifstream &fcourse, Student a, int CWp, int EXp, int cNum)
-//(course, grading, student, course the student taking)
+double getGpa (int courseCW, int courseEX, int CW, int EX)
 {
-    int call=1;
-    double score, CW, EX;
-    stringstream linestream;
-    string line, section;
-    char test;
-
-    fcourse >> test;
-    while (test!='*')
-    {
-        linestream.clear();
-        getline (fcourse, line, ',');
-        //cout << test << line << endl;
-        linestream << line;
-        if (line>="a" && line<="z")
-            a.name=(test+line);
-        else if (line.length()==9 && !(test>='a' && test<='z'))
-            a.uid=(test+line);
-        else if (test=='E')
-        {
-            for (int phrase0=0; phrase0<call; phrase0++) 
-                linestream >> section;
-            linestream >> EX;
-        }
-        else if (test=='C')
-        {
-            for (int phrase1=0; phrase1<call; phrase1++)
-                linestream >> section;
-            linestream >> CW;
-        }
-        fcourse >> test;
-    }
-    cout << a.name << " [" << a.uid << "]" << endl;
-    score = (CW/100.0*CWp)+(EX/100.0*EXp);
+    double score;
+    score = (CW/100.0*courseCW)+(EX/100.0*courseEX);
     return readGrade(score);
 }
 
-bool findStudent (ifstream &fcourse, Student a)
+/*bool findStudent (ifstream &fcourse, Student a)
 //to see if the student attends the course.
 {
     string text;
@@ -378,7 +443,10 @@ void prompt()
 
 int main()
 {
-    CourseList *list = readData();
+    StudentList *students = new StudentList;
+    CourseList *list = readData(students);
+
+	printStudentList(students);
 
 	prompt();
     /*
