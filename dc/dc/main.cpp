@@ -22,10 +22,10 @@ struct GradeList
 {
     Grade **list;
     int count;
-    
+
     GradeList()
     {
-		list = new Grade*[6];
+        list = new Grade*[6];
         count = 0;
     }
 };
@@ -36,9 +36,9 @@ struct Student
     GradeList *gradeList;
     double maxGpa;
 
-	Student()
+    Student()
     {
-		gradeList = new GradeList;
+        gradeList = new GradeList;
     }
 };
 
@@ -46,7 +46,7 @@ struct StudentList
 {
     Student **list;
     int count;
-    
+
     StudentList()
     {
         list = new Student*[300];
@@ -66,7 +66,7 @@ struct CourseDataList
 {
     CourseData **list;
     int count;
-    
+
     CourseDataList()
     {
         list = new CourseData*[100];
@@ -86,7 +86,7 @@ struct CourseList
 {
     Course **list;
     int count;
-    
+
     CourseList()
     {
         list = new Course*[6];
@@ -110,7 +110,7 @@ int compareStudents(Student *a, Student *b)
     int result = strcmp(a->name.c_str(), b->name.c_str());
     if(result == 0)
         return strcmp(a->uid.c_str(), b->uid.c_str());
-        
+
     return result;
 }
 
@@ -122,19 +122,19 @@ int findStudent(StudentList *list, Student *s, int min, int max)
     if(min == max)
     {
         if(compareStudents(list->list[min], s) == 0)
-			return min;
+            return min;
         else
-			return -1;
+            return -1;
     }
-	if(min + 1 == max)
+    if(min + 1 == max)
     {
-		if(compareStudents(list->list[min], s) == 0)
-			return min;
-		if(compareStudents(list->list[max], s) == 0)
-			return max;
-		return -1;
+        if(compareStudents(list->list[min], s) == 0)
+            return min;
+        if(compareStudents(list->list[max], s) == 0)
+            return max;
+        return -1;
     }
-    
+
     int mid = (max + min) / 2.0;
 
     int result = compareStudents(list->list[mid], s);
@@ -154,7 +154,7 @@ void updateMaxGpa(Student *s)
     for(int i=0; i<s->gradeList->count; i++ )
     {
         if(s->gradeList->list[i]->gpa > s->maxGpa)
-			s->maxGpa = s->gradeList->list[0]->gpa;
+            s->maxGpa = s->gradeList->list[0]->gpa;
     }
 }
 
@@ -163,7 +163,7 @@ void addStudent(StudentList *list, Student *s)
     if(list->count == 0)
     {
         list->list[list->count++] = s;
-		updateMaxGpa(s);
+        updateMaxGpa(s);
     }
     else
     {
@@ -180,7 +180,7 @@ void addStudent(StudentList *list, Student *s)
                 {
                     list->list[i] = s;
                     list->count++;
-					updateMaxGpa(s);
+                    updateMaxGpa(s);
                     return;
                 }
             }
@@ -189,16 +189,16 @@ void addStudent(StudentList *list, Student *s)
         {
             Grade *g = new Grade;
             g->course = s->gradeList->list[0]->course;
-			g->gpa = s->gradeList->list[0]->gpa;
+            g->gpa = s->gradeList->list[0]->gpa;
 
-			addGrade(list->list[index]->gradeList, g);
+            addGrade(list->list[index]->gradeList, g);
 
-			updateMaxGpa(list->list[index]);
+            updateMaxGpa(list->list[index]);
 
-			delete s->gradeList->list[0];
-			delete [] s->gradeList->list;
-			delete s->gradeList;
-			delete s;
+            delete s->gradeList->list[0];
+            delete [] s->gradeList->list;
+            delete s->gradeList;
+            delete s;
         }
     }
 }
@@ -210,23 +210,23 @@ void addCourseData(CourseDataList *list, CourseData *c)
 
 void printStudent(Student *s)
 {
-	cout << s->name << " [" << s->uid << "]" << endl;
+    cout << s->name << " [" << s->uid << "]" << endl;
 
-	GradeList *grades = s->gradeList;
-	for(int i=0; i<grades->count; i++)
+    GradeList *grades = s->gradeList;
+    for(int i=0; i<grades->count; i++)
     {
-		Grade *grade = grades->list[i];
-		cout << grade->course << ": " << grade->gpa << endl;
+        Grade *grade = grades->list[i];
+        cout << grade->course << ": " << grade->gpa << endl;
     }
-		
-	cout << endl;
+
+    cout << endl;
 }
 
 void printStudentList(StudentList *list)
 {
     for(int i = 0; i < list->count; i++)
     {
-		printStudent(list->list[i]);
+        printStudent(list->list[i]);
     }
 }
 
@@ -245,19 +245,19 @@ CourseDataList* readSpecificCourse(Course *course, StudentList *students)
     ifstream f;
     f.open((course->name + ".txt").c_str());
     error(f);
-    
+
     stringstream linestream, iss;
     string temp, line, tok;
-    
+
     CourseDataList *list = new CourseDataList;
     CourseData *c;
-    
+
     while(getline(f, line))
     {
         c = new CourseData;
         linestream.clear();
         linestream << line;
-        
+
         while(getline(linestream, tok, ','))
         {
             if (tok.length() == 10 && !(tok[0] >= 'a' && tok[0] <= 'z')) 
@@ -275,22 +275,22 @@ CourseDataList* readSpecificCourse(Course *course, StudentList *students)
                 iss >> c->cw;
             }
             else if(tok[0] != '*')
-				c->name = tok;
+                c->name = tok;
         }
-        
+
         addCourseData(list, c);
 
-		Student *s = new Student;
-		s->name = c->name;
-		s->uid = c->uid;
-		Grade *g = new Grade;
-		g->course = course->name;
+        Student *s = new Student;
+        s->name = c->name;
+        s->uid = c->uid;
+        Grade *g = new Grade;
+        g->course = course->name;
         g->gpa = getGpa(course->cw, course->ex, c->cw, c->ex);
-		addGrade(s->gradeList, g);
+        addGrade(s->gradeList, g);
 
-		addStudent(students, s);
+        addStudent(students, s);
     }
-    
+
     f.close();
     return list;
 }
@@ -300,30 +300,30 @@ CourseList* readData(StudentList *students)
     ifstream fdata;
     fdata.open(DATA_FILE);
     error(fdata);
-    
+
     char dummy;
-    
+
     CourseList *list = new CourseList[6];
-    
+
     while (fdata.good())
     {
         Course *c = new Course;
         string filename;
-        
+
         fdata >> filename >> dummy >> dummy >> c->cw >> dummy >> dummy >> c->ex;
         c->name = filename.substr(0, filename.length() - 4);
-        
+
         c->data = readSpecificCourse(c, students);
 
         addCourse(list, c);
     }
-    
+
     fdata.close ();
     return list;
 }
 
 double readGrade (double score) //ok
-//determine the gpa of student in that course.
+    //determine the gpa of student in that course.
 {
     ifstream fgrade;
 
@@ -359,15 +359,15 @@ void findUID(StudentList *students, string uid)
 {
     for(int i=0; i<students->count; i++)
     {
-		Student *s = students->list[i];
-		if(s->uid == uid)
+        Student *s = students->list[i];
+        if(s->uid == uid)
         {
             printStudent(s);
-			return;
+            return;
         }
     }
 
-	cout << "no record" << endl << endl;
+    cout << "no record" << endl << endl;
 }
 
 void findStudentName(StudentList *students, string name, bool matchStart)
@@ -375,7 +375,7 @@ void findStudentName(StudentList *students, string name, bool matchStart)
     stringstream ss;
     string nameTok;
     bool found = false;
-    
+
     for(int i=0; i<students->count; i++)
     {
         ss.clear();
@@ -391,43 +391,43 @@ void findStudentName(StudentList *students, string name, bool matchStart)
             }
         }
     }
-    
+
     if(!found)
         cout << "no record" << endl << endl;
 }
 
 void prompt(StudentList *students)
 {
-	string command, uid;
+    string command, uid;
 
-	cout << "all | search | top | <uid> | end" << endl;
+    cout << "all | search | top | <uid> | end" << endl;
     getline(cin, command);
 
     while (command != "end")
     {
         if (command == "all")
         {
-			printStudentList(students);
+            printStudentList(students);
         }
         else if (command == "search")
         {
-			string word;
-			getline(cin, word);
-			
-			int index = word.find("*");
-			if(index > 0)
-			    findStudentName(students, word.substr(0, word.length() - 1), true);
-	        else
-	            findStudentName(students, word, false);
+            string word;
+            getline(cin, word);
+
+            int index = word.find("*");
+            if(index > 0)
+                findStudentName(students, word.substr(0, word.length() - 1), true);
+            else
+                findStudentName(students, word, false);
 
         }
         else if (command == "top")
         {
-			;
+            ;
         }
         else
         {
-			findUID(students, command);
+            findUID(students, command);
         }
         cout << endl << "all | search | top | <uid> | end" << endl;
         getline(cin, command);
@@ -439,7 +439,7 @@ int main()
     StudentList *students = new StudentList;
     CourseList *list = readData(students);
 
-	prompt(students);
+    prompt(students);
 
     return 0;
 }
