@@ -355,6 +355,21 @@ double getGpa (int courseCW, int courseEX, int CW, int EX)
     return readGrade(score);
 }
 
+void findUID(StudentList *students, string uid)
+{
+    for(int i=0; i<students->count; i++)
+    {
+		Student *s = students->list[i];
+		if(s->uid == uid)
+        {
+            printStudent(s);
+			return;
+        }
+    }
+
+	cout << "no record" << endl << endl;
+}
+
 void findStudentName(StudentList *students, string name, bool matchStart)
 {
     stringstream ss;
@@ -394,8 +409,7 @@ void prompt(StudentList *students)
         {
 			printStudentList(students);
         }
-
-        if (command == "search")
+        else if (command == "search")
         {
 			string word;
 			getline(cin, word);
@@ -407,17 +421,14 @@ void prompt(StudentList *students)
 	            findStudentName(students, word, false);
 
         }
-
-        if (command == "top")
+        else if (command == "top")
+        {
 			;
-            //Top (s, topNum);
-
-   //     if (command >> uid)
-   //     {
-			//;
-   //         //UIDstream << uid << endl;
-   //         //spStudent.uid=UIDstream.str();
-   //     }
+        }
+        else
+        {
+			findUID(students, command);
+        }
         cout << endl << "all | search | top | <uid> | end" << endl;
         getline(cin, command);
     }
